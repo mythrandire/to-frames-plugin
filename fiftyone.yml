@@ -1,9 +1,9 @@
-name: "to-frames-plugin"
+name: "@mythrandire/to-frames-plugin"
 type: plugin
-author: "Your Name"
+author: "Dwiref Oza"
 version: "1.0.0"
-description: "A plugin that wraps the FiftyOne `to_frames` method"
+description: "A plugin that wraps the FiftyOne to_frames method"
 fiftyone:
-  version: "*"
+  version: ">=1.2.0"
 operators:
   - to-frames-operator
