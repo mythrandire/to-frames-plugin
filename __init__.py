@@ -9,11 +9,26 @@ class ToFramesOperator(foo.Operator):
             name="to-frames-operator",
             label="Export video frames (to_frames)",
             description="Wraps the `to_frames` method and exposes its parameters",
+            icon="art_track",
             # Hide from operator browser if you only want to trigger it from code/panel
             unlisted=False,
             # Optionally allow delegated (background) execution
             allow_delegated_execution=True,
             allow_immediate_execution=True,
+        )
+    
+    def resolve_placement(self, ctx):
+        """
+        Optional convenience: place a button in the App so the user can
+        click to open this operator's input form.
+        """
+        return types.Placement(
+            types.Places.SAMPLES_GRID_SECONDARY_ACTIONS,
+            types.Button(
+                label="Run to_frames and Load ToFrames viewstage)",
+                icon="art_track",
+                prompt=True,  # always show the operator's input prompt
+            ),
         )
 
     def resolve_input(self, ctx):
@@ -111,6 +126,12 @@ class ToFramesOperator(foo.Operator):
             description="Filename pattern (e.g. '%06d.jpg'). Leave blank for default",
             required=False
         )
+        inputs.str(
+            "saved_view_name",
+            label="saved view name",
+            description="Name for saved ToFrames view",
+            required=False
+        )
 
         return types.Property(inputs, view=types.View(label="to_frames parameters"))
 
@@ -142,9 +163,10 @@ class ToFramesOperator(foo.Operator):
         max_fps_val = params.get("max_fps", None)
 
         # Convert empty strings to None, etc.
-        output_dir = params.get("output_dir", None) or None
-        rel_dir = params.get("rel_dir", None) or None
-        frames_patt = params.get("frames_patt", None) or None
+        output_dir = params.get("output_dir", None)
+        rel_dir = params.get("rel_dir", None)
+        frames_patt = params.get("frames_patt", None)
+        saved_view_name = params.get("saved_view_name", None)
 
         # Boolean flags
         sample_frames = bool(params.get("sample_frames", False))
@@ -169,6 +191,9 @@ class ToFramesOperator(foo.Operator):
             skip_failures=skip_failures,
             verbose=verbose,
         )
+        if saved_view_name is not None:
+            ctx.dataset.save_view(saved_view_name, frames_view)
+            ctx.ops.set_view(view=frames_view)
 
         # For demonstration, return the total number of frames 
         # that ended up in the resulting FramesView
