@@ -1,0 +1,9 @@
+name: "to-frames-plugin"
+type: plugin
+author: "Your Name"
+version: "1.0.0"
+description: "A plugin that wraps the FiftyOne `to_frames` method"
+fiftyone:
+  version: "*"
+operators:
+  - to-frames-operator
